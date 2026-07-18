@@ -73,5 +73,5 @@ jobs:
           file: Dockerfile
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/shiptrack:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/shiptrack:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME || 'abdulahad086' }}/shiptrack:latest
+            ${{ secrets.DOCKERHUB_USERNAME || 'abdulahad086' }}/shiptrack:${{ github.sha }}
