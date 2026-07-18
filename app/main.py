@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.config import settings
 from app.database import Base, engine, get_db
 from app.routers import applications, deployments
+from app import models  # noqa: F401
 
 # Setup logging configuration
 logging.basicConfig(
@@ -21,8 +22,6 @@ logger = logging.getLogger("shiptrack")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Auto-create tables on startup
-    import app.models
-    print("DEBUG TABLES IN METADATA AT STARTUP:", list(Base.metadata.tables.keys()))
     Base.metadata.create_all(bind=engine)
     logger.info(f"ShipTrack API starting, env={settings.APP_ENV}, db=connected")
     yield
