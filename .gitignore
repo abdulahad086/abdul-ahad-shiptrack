@@ -1,0 +1,26 @@
+# Environment
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+logs/
+
+# Database backups
+backups/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
