@@ -53,7 +53,7 @@ For local development, the `docker-compose.yml` configures a bind mount mapping 
 ## Docker Hub Repository
 
 The built Docker image is pushed to:
-[https://hub.docker.com/r/abdulahad086/shiptrack](https://hub.docker.com/r/abdulahad086/shiptrack)
+[https://hub.docker.com/r/abdulahadmujahid/shiptrack](https://hub.docker.com/r/abdulahadmujahid/shiptrack)
 
 ### Final Image Size
 The final built Docker image size is under 200 MB (well below the 300 MB target limit).
