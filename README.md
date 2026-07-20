@@ -1,59 +1,156 @@
 # ShipTrack: Deployment Tracker API
 
-An internal API that records every software deployment: which application, which version, which environment, and whether it succeeded. Written in FastAPI, backed by PostgreSQL 16.
+ShipTrack is a FastAPI-based REST API for tracking software deployments. It records which application was deployed, the deployed version, target environment, deployment status, and supports deployment rollback. The project uses PostgreSQL 16, Docker, SQLAlchemy 2.0, and GitHub Actions for CI/CD.
 
-## Running the API
+---
 
-To spin up the database and the API locally:
+# Features
+
+- Manage applications
+- Track deployments
+- Rollback to previous successful deployment
+- API Key protection for write operations
+- Background audit logging
+- PostgreSQL database
+- Docker & Docker Compose support
+- Automated testing with Pytest
+- CI/CD with GitHub Actions
+
+---
+
+# Environment Variables
+
+Copy the example environment file before running the project.
+
 ```bash
 cp .env.example .env
+```
+
+Required environment variables:
+
+| Variable | Description |
+|----------|-------------|
+| DATABASE_URL | PostgreSQL connection string |
+| API_KEY | API key required for POST/PATCH endpoints |
+| APP_ENV | Application environment (development/local) |
+| LOG_LEVEL | Logging level |
+
+---
+
+# Running the API
+
+Start the API and PostgreSQL:
+
+```bash
 docker compose up --build -d
 ```
 
-Access Swagger UI at [http://localhost:8000/docs](http://localhost:8000/docs).
+Swagger documentation:
 
-## Running Tests & Coverage
+```
+http://localhost:8000/docs
+```
 
-To run the full test suite with coverage inside the container:
+Health endpoint:
+
+```
+GET /health
+```
+
+---
+
+# API Endpoints
+
+## Applications
+
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| POST | /applications | Create application |
+| GET | /applications | List applications |
+
+## Deployments
+
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| POST | /deployments | Create deployment |
+| GET | /deployments | List deployments |
+| POST | /deployments/{deployment_id}/rollback | Rollback deployment |
+
+## Health
+
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| GET | /health | API & database health check |
+
+---
+
+# Running Tests
+
+Run all tests with coverage inside the API container.
+
 ```bash
 docker compose exec -T api pytest --cov=app --cov-report=term-missing --cov-fail-under=60
 ```
 
-## Nightly Backups (Cron)
+Run Ruff:
 
-To schedule nightly database backups at 02:00 daily, add the following line to your crontab (`crontab -e`):
+```bash
+docker compose exec -T api ruff check .
+```
+
+---
+
+# Nightly Database Backup (Cron)
+
+Add the following line to your crontab:
 
 ```cron
 0 2 * * * cd /Users/mac/Desktop/abdul-ahad-shiptrack && ./scripts/backup_db.sh >> logs/backup.log 2>&1
 ```
 
-### Explanation of the Crontab line:
-- `0`: Minute (0th minute)
-- `2`: Hour (2:00 AM)
-- `*`: Day of the Month (every day of the month)
-- `*`: Month (every month)
-- `*`: Day of the Week (every day of the week)
-- `cd /Users/mac/Desktop/abdul-ahad-shiptrack`: Changes the working directory to the absolute path of the repository root. This is critical because cron jobs run with a very minimal default shell environment and in the user's home directory. Changing directory ensures that paths to scripts and outputs are correctly resolved.
-- `./scripts/backup_db.sh`: Executes the backup script from the repository root.
-- `>> logs/backup.log 2>&1`: Redirects stdout (`>>`) and stderr (`2>&1`) to append to `logs/backup.log`.
+Cron fields:
 
-## Verifying Live Reload
+- Minute
+- Hour
+- Day of Month
+- Month
+- Day of Week
 
-For local development, the `docker-compose.yml` configures a bind mount mapping the `./app` directory to the container. When code is edited, FastAPI's reloader (via watchfiles) automatically detects the changes and reloads.
+The absolute path and `cd` are required because cron runs from a minimal shell environment and does not automatically execute inside the project directory.
 
-1. **File edited**: `app/main.py`
-2. **Change made**: Changed the startup log line or a custom test response.
-3. **Reloader log**:
-   ```
-   INFO:     WatchFiles detected changes in 'app/main.py'. Reloading...
-   INFO:     Finished reloading
-   ```
-4. **New response**: Received the updated response immediately without running `docker compose build`.
+---
 
-## Docker Hub Repository
+# Live Reload
 
-The built Docker image is pushed to:
-[https://hub.docker.com/r/abdulahadmujahid/shiptrack](https://hub.docker.com/r/abdulahadmujahid/shiptrack)
+The project uses bind mounts together with FastAPI's reload mode.
 
-### Final Image Size
-The final built Docker image size is under 200 MB (well below the 300 MB target limit).
+After editing files inside the `app/` directory, the API reloads automatically without rebuilding the Docker image.
+
+---
+
+# Docker Hub
+
+Docker image:
+
+https://hub.docker.com/r/abdulahadmujahid/shiptrack
+
+---
+
+# Tech Stack
+
+- Python 3.12
+- FastAPI
+- Pydantic v2
+- SQLAlchemy 2.0
+- PostgreSQL 16
+- Docker
+- Docker Compose
+- Pytest
+- Ruff
+- GitHub Actions
+
+---
+
+# Image Size
+
+The final Docker image is below **300 MB**, satisfying the assignment requirement.
